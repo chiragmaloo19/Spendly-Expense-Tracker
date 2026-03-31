@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Spendly — Expense & Income Tracker</title>
+  <meta name="description" content="Spendly helps you track your expenses and income with beautiful charts and insights." />
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <div class="app-wrapper">
+
+    <!-- HEADER -->
+    <header class="header">
+      <div class="header-left">
+        <div class="logo-mark">◈</div>
+        <div>
+          <h1 class="logo-text">Spendly</h1>
+          <p class="logo-sub">Personal Finance Tracker</p>
+        </div>
+      </div>
+      <div class="header-right">
+        <span class="date-badge" id="currentDate"></span>
+      </div>
+    </header>
+
+    <!-- SUMMARY CARDS -->
+    <section class="summary-grid">
+
+      <div class="card card--income">
+        <div class="card-icon">💰</div>
+        <div class="card-body">
+          <p class="card-label">Total Income</p>
+          <h2 class="card-value" id="totalIncome">₹0.00</h2>
+          <span class="card-tag">All time</span>
+        </div>
+      </div>
+
+      <div class="card card--expense">
+        <div class="card-icon">💸</div>
+        <div class="card-body">
+          <p class="card-label">Total Spent</p>
+          <h2 class="card-value" id="totalSpent">₹0.00</h2>
+          <span class="card-tag">All time</span>
+        </div>
+      </div>
+
+      <div class="card card--balance">
+        <div class="card-icon">⚖️</div>
+        <div class="card-body">
+          <p class="card-label">Net Balance</p>
+          <h2 class="card-value" id="netBalance">₹0.00</h2>
+          <span class="card-tag" id="balanceStatus">—</span>
+        </div>
+      </div>
+
+      <div class="card card--month">
+        <div class="card-icon">📅</div>
+        <div class="card-body">
+          <p class="card-label">Expense This Month</p>
+          <h2 class="card-value" id="monthSpent">₹0.00</h2>
+          <span class="card-tag" id="currentMonth"></span>
+        </div>
+      </div>
+
+      <div class="card card--biggest">
+        <div class="card-icon">🔺</div>
+        <div class="card-body">
+          <p class="card-label">Biggest Expense</p>
+          <h2 class="card-value" id="biggestExpense">₹0.00</h2>
+          <span class="card-tag" id="biggestLabel">—</span>
+        </div>
+      </div>
+
+      <div class="card card--count">
+        <div class="card-icon">🧾</div>
+        <div class="card-body">
+          <p class="card-label">Transactions</p>
+          <h2 class="card-value" id="txCount">0</h2>
+          <span class="card-tag">Total entries</span>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-grid">
+
+      <!-- LEFT: TABBED FORM + LIST -->
+      <div class="left-col">
+
+        <!-- TABBED FORM -->
+        <div class="panel form-panel">
+          <div class="form-tabs">
+            <button class="tab-btn tab-expense tab-btn--active" id="tabExpense" onclick="switchTab('expense')">
+              <span>↑</span> Add Expense
+            </button>
+            <button class="tab-btn tab-income" id="tabIncome" onclick="switchTab('income')">
+              <span>↓</span> Add Income
+            </button>
+          </div>
+
+          <!-- Expense Form -->
+          <div id="expenseForm">
+            <div class="form-group">
+              <label for="expenseName">Description</label>
+              <input type="text" id="expenseName" placeholder="e.g. Dinner at restaurant" />
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="expenseAmount">Amount (₹)</label>
+                <input type="number" id="expenseAmount" placeholder="0.00" min="0" step="0.01" />
+              </div>
+              <div class="form-group">
+                <label for="expenseDate">Date</label>
+                <input type="date" id="expenseDate" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="expenseCategory">Category</label>
+              <select id="expenseCategory">
+                <option value="Food">🍔 Food</option>
+                <option value="Transport">🚌 Transport</option>
+                <option value="Shopping">🛍️ Shopping</option>
+                <option value="Bills">💡 Bills</option>
+                <option value="Entertainment">🎮 Entertainment</option>
+                <option value="Health">💊 Health</option>
+                <option value="Other">📦 Other</option>
+              </select>
+            </div>
+            <button class="btn-add btn-add--expense" id="addExpenseBtn">+ Add Expense</button>
+          </div>
+
+          <!-- Income Form -->
+          <div id="incomeForm" style="display:none;">
+            <div class="form-group">
+              <label for="incomeName">Description</label>
+              <input type="text" id="incomeName" placeholder="e.g. Monthly salary" />
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="incomeAmount">Amount (₹)</label>
+                <input type="number" id="incomeAmount" placeholder="0.00" min="0" step="0.01" />
+              </div>
+              <div class="form-group">
+                <label for="incomeDate">Date</label>
+                <input type="date" id="incomeDate" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="incomeSource">Source</label>
+              <select id="incomeSource">
+                <option value="Salary">💼 Salary</option>
+                <option value="Freelance">💻 Freelance</option>
+                <option value="Business">🏢 Business</option>
+                <option value="Investment">📈 Investment</option>
+                <option value="Gift">🎁 Gift</option>
+                <option value="Other">📦 Other</option>
+              </select>
+            </div>
+            <button class="btn-add btn-add--income" id="addIncomeBtn">+ Add Income</button>
+          </div>
+        </div>
+
+        <!-- TRANSACTION LIST -->
+        <div class="panel list-panel">
+          <div class="list-header">
+            <h3 class="panel-title">Transactions</h3>
+            <div class="list-controls">
+              <select class="filter-select" id="filterType">
+                <option value="All">All Types</option>
+                <option value="expense">Expenses</option>
+                <option value="income">Income</option>
+              </select>
+              <select class="filter-select" id="filterCategory">
+                <option value="All">All Categories</option>
+                <option value="Food">🍔 Food</option>
+                <option value="Transport">🚌 Transport</option>
+                <option value="Shopping">🛍️ Shopping</option>
+                <option value="Bills">💡 Bills</option>
+                <option value="Entertainment">🎮 Entertainment</option>
+                <option value="Health">💊 Health</option>
+                <option value="Salary">💼 Salary</option>
+                <option value="Freelance">💻 Freelance</option>
+                <option value="Business">🏢 Business</option>
+                <option value="Investment">📈 Investment</option>
+                <option value="Gift">🎁 Gift</option>
+                <option value="Other">📦 Other</option>
+              </select>
+              <button class="btn-export" id="exportCsvBtn" title="Export as CSV">
+                ↓ Export CSV
+              </button>
+            </div>
+          </div>
+          <ul class="expense-list" id="expenseList">
+            <li class="empty-state">No transactions yet. Add your first one!</li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- RIGHT: CHARTS -->
+      <div class="right-col">
+
+        <div class="panel chart-panel">
+          <h3 class="panel-title">Expenses by Category</h3>
+          <div class="chart-container doughnut-container">
+            <canvas id="categoryChart"></canvas>
+          </div>
+        </div>
+
+        <div class="panel chart-panel">
+          <div class="chart-header-row">
+            <h3 class="panel-title">Income &amp; Expense by Month</h3>
+            <div class="chart-legend-row">
+              <span class="legend-dot legend-income"></span><span class="legend-label">Income</span>
+              <span class="legend-dot legend-expense"></span><span class="legend-label">Expense</span>
+            </div>
+          </div>
+          <div class="chart-container bar-container">
+            <canvas id="monthlyChart"></canvas>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div id="toast" class="toast"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
